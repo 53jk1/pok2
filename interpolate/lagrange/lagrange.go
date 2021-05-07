@@ -2,6 +2,8 @@ package lagrange
 
 import (
 	"fmt"
+	
+	"github.com/53jk1/pok2/interpolate"
 )
 
 // Lagrange zapewnia podstawową funkcjonalność interpolacji lagrange.
