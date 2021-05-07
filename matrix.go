@@ -1,14 +1,14 @@
-package main
+package pok2
 
 import (
 	"fmt"
 	"math"
 )
 
-// Matrix type is the slice of Vectors, with custom methods needed for matrix operations.
+// Typ macierzy to wycinek wektorów z niestandardowymi metodami potrzebnymi do operacji na macierzach.
 type Matrix []Vector
 
-// Dim returns the dimensions of the matrix in the form (rows, columns).
+// Dim zwraca wymiary macierzy w postaci (wiersze, kolumny).
 func (m Matrix) Dim() (int, int) {
 	if m.isNil() {
 		return 0, 0
@@ -16,21 +16,21 @@ func (m Matrix) Dim() (int, int) {
 	return len(m), len(m[0])
 }
 
-// Invert returns the inverted matrix by using Gauss-Jordan elimination
+// Invert zwraca odwróconą macierz przy użyciu eliminacji Gaussa-Jordana
 func (m Matrix) Invert() (Matrix, error) {
 
 	if !m.isSquare() {
-		return nil, fmt.Errorf("Cannot invert non-square Matrix")
+		return nil, fmt.Errorf("Nie można odwrócić macierzy niekwadratowej")
 	}
 
 	var rows, _ = m.Dim()
 
 	vec := make(Vector, rows)
 
-	// 1. Reduction to identity form
+	// 1. Redukcja do formy tożsamości
 	for currentRow := 1; currentRow <= rows; currentRow++ {
 
-		// Pivoting
+		// Obrotowe
 		p := currentRow
 		for i := currentRow + 1; i <= rows; i++ {
 			if math.Abs(m[i-1][currentRow-1]) > math.Abs(m[p-1][currentRow-1]) {
@@ -38,12 +38,12 @@ func (m Matrix) Invert() (Matrix, error) {
 			}
 		}
 
-		// If there exists no element a(k,i) different from zero, matrix is singular and has none or more than one solution
+		// Jeśli nie ma elementu a (k, i) różnego od zera, macierz jest pojedyncza i nie ma żadnego lub więcej niż jednego rozwiązania
 		if math.Abs(m[p-1][currentRow-1]) < 1e-10 {
-			return nil, fmt.Errorf("Matrix is singular")
+			return nil, fmt.Errorf("Macierz jest pojedyncza")
 		}
 
-		// If we find pivot which is the largest a(i, currentRow), we swap the rows
+		// Jeśli znajdziemy pivot, który jest największym a (i, currentRow), zamieniamy wiersze
 		if p != currentRow {
 			tmp := m[currentRow-1]
 			m[currentRow-1] = m[p-1]
@@ -55,7 +55,7 @@ func (m Matrix) Invert() (Matrix, error) {
 		mi := m[currentRow-1][currentRow-1]
 		m[currentRow-1][currentRow-1] = 1.0
 
-		// Dividing by mi
+		// Dzielenie przez mi
 		div, err := m[currentRow-1].DivideByScalar(mi)
 
 		if err != nil {
@@ -75,7 +75,7 @@ func (m Matrix) Invert() (Matrix, error) {
 		}
 	}
 
-	// Reverse swapping
+	// Odwrotna zamiana
 	for j := rows; j >= 1; j-- {
 		p := vec[j-1]
 		if p != float64(j) {
@@ -89,7 +89,7 @@ func (m Matrix) Invert() (Matrix, error) {
 	return m, nil
 }
 
-// Log applies natural logarithm to all the elements of the matrix, and returns the resulting matrix.
+// Log stosuje logarytm naturalny do wszystkich elementów macierzy i zwraca wynikową macierz.
 func (m Matrix) Log() Matrix {
 	row, col := m.Dim()
 	result := make(Matrix, row)
@@ -102,7 +102,7 @@ func (m Matrix) Log() Matrix {
 	return result
 }
 
-// Exp applies e^x to all the elements of the matrix, and returns the resulting matrix.
+// Exp stosuje e^x do wszystkich elementów macierzy i zwraca wynikową macierz.
 func (m Matrix) Exp() Matrix {
 	row, col := m.Dim()
 	result := make(Matrix, row)
@@ -115,7 +115,9 @@ func (m Matrix) Exp() Matrix {
 	return result
 }
 
-// LeftDivide receives another matrix as a parameter. The method solves the symbolic system of linear equations in matrix form, A*X = B for X. It returns the results in matrix form and error (if there is any).
+// LeftDivide otrzymuje inną macierz jako parametr.
+// Metoda rozwiązuje symboliczny układ równań liniowych w postaci macierzowej, A * X = B dla X.
+// Zwraca wyniki w postaci macierzowej i błędu (jeśli istnieje).
 func (m Matrix) LeftDivide(m2 Matrix) (Matrix, error) {
 	var r Matrix
 	mT, err := m.Transpose()
@@ -166,7 +168,8 @@ func (m Matrix) isSquare() bool {
 	return rows == cols
 }
 
-// MultiplyBy receives another matrix as a parameter. It multiplies the matrices and returns the resulting matrix and error.
+// MultiplyBy otrzymuje inną macierz jako parametr.
+// Mnoży macierze i zwraca wynikową macierz i błąd.
 func (m Matrix) MultiplyBy(m2 Matrix) (Matrix, error) {
 	var r Matrix
 
@@ -174,7 +177,7 @@ func (m Matrix) MultiplyBy(m2 Matrix) (Matrix, error) {
 	rows2, _ := m2.Dim()
 
 	if cols1 != rows2 {
-		return r, fmt.Errorf("The number of columns of the 1st matrix must equal the number of rows of the 2nd matrix")
+		return r, fmt.Errorf("Liczba kolumn pierwszej macierzy musi być równa liczbie wierszy drugiej macierzy")
 	}
 
 	for currentRowIndex := range m {
@@ -198,16 +201,17 @@ func (m Matrix) MultiplyBy(m2 Matrix) (Matrix, error) {
 	return r, nil
 }
 
-// InsertCol receives the index and the vector. It adds the provided vector as a column at index k, and returns the resulting matrix and the error (if there is any).
+// InsertCol otrzymuje indeks i wektor.
+// Dodaje podany wektor jako kolumnę o indeksie k i zwraca wynikową macierz oraz błąd (jeśli istnieje).
 func (m Matrix) InsertCol(k int, c Vector) (Matrix, error) {
 	var r Matrix
 
 	if k < 0 {
-		return r, fmt.Errorf("Index cannot be less than 0")
+		return r, fmt.Errorf("Indeks nie może być mniejszy niż 0")
 	} else if _, width := m.Dim(); k > width {
-		return r, fmt.Errorf("Index cannot be greater than number of columns + 1")
+		return r, fmt.Errorf("Indeks nie może być większy niż liczba kolumn + 1")
 	} else if len(c) != len(m) {
-		return r, fmt.Errorf("Column dimensions must match")
+		return r, fmt.Errorf("Wymiary kolumn muszą być zgodne")
 	}
 
 	for i := 0; i < len(m); i++ {
@@ -219,24 +223,26 @@ func (m Matrix) InsertCol(k int, c Vector) (Matrix, error) {
 	return r, nil
 }
 
-// Row receives the index as a parameter. It returns the vector row at provided index and the error (if there is any).
+// Row otrzymuje indeks jako parametr.
+// Zwraca wiersz wektora pod podanym indeksem i błąd (jeśli istnieje).
 func (m Matrix) Row(i int) (Vector, error) {
 	if i < 0 {
-		return nil, fmt.Errorf("Index cannot be negative")
+		return nil, fmt.Errorf("Indeks nie może być ujemny")
 	} else if i > len(m) {
-		return nil, fmt.Errorf("Index cannot be greater than the length")
+		return nil, fmt.Errorf("Indeks nie może być większy niż długość")
 	}
 	return m[i], nil
 }
 
-// Col receives the index as a parameter. It returns the vector column at provided index and the error (if there is any).
+// Col otrzymuje indeks jako parametr.
+// Zwraca kolumnę wektora pod podanym indeksem i błąd (jeśli istnieje).
 func (m Matrix) Col(i int) (Vector, error) {
 	var r Vector
 
 	if i < 0 {
-		return nil, fmt.Errorf("Index cannot be negative")
+		return nil, fmt.Errorf("Indeks nie może być ujemny")
 	} else if i > len(m[0]) {
-		return nil, fmt.Errorf("Index cannot be greater than the length")
+		return nil, fmt.Errorf("Indeks nie może być większy niż długość")
 	}
 
 	for row := range m {
@@ -246,7 +252,7 @@ func (m Matrix) Col(i int) (Vector, error) {
 	return r, nil
 }
 
-// Transpose returns the transposed matrix and the error.
+// Transpozycja zwraca transponowaną macierz i błąd.
 func (m Matrix) Transpose() (Matrix, error) {
 	var t Matrix
 
@@ -261,7 +267,8 @@ func (m Matrix) Transpose() (Matrix, error) {
 	return t, nil
 }
 
-// IsSimilar receives another matrix and tolerance as the parameters. It checks whether the two matrices are similar within the provided tolerance.
+// IsSimilar otrzymuje inną macierz i tolerancję jako parametry.
+// Sprawdza, czy dwie macierze są podobne w ramach podanej tolerancji.
 func (m Matrix) IsSimilar(m2 Matrix, tol float64) bool {
 
 	if m.IsEqual(m2) {
@@ -283,7 +290,8 @@ func (m Matrix) IsSimilar(m2 Matrix, tol float64) bool {
 	return true
 }
 
-// IsEqual receives another matrix as a parameter. It returns true if the values of the two matrices are equal, and false otherwise.
+// IsEqual otrzymuje inną macierz jako parametr.
+// Zwraca prawdę, jeśli wartości dwóch macierzy są równe, lub fałsz w przeciwnym razie.
 func (m Matrix) IsEqual(m2 Matrix) bool {
 	if m == nil && m2 == nil {
 		return true
@@ -303,7 +311,8 @@ func (m Matrix) IsEqual(m2 Matrix) bool {
 	return true
 }
 
-// Add receives another matrix as a parameter. It adds the two matrices and returns the result matrix and the error (if there is any).
+// Add otrzymuje inną macierz jako parametr.
+// Dodaje dwie macierze i zwraca macierz wyników oraz błąd (jeśli taki istnieje).
 func (m Matrix) Add(m2 Matrix) (Matrix, error) {
 	rows, cols := m.Dim()
 	var r = make(Matrix, rows, cols)
@@ -320,7 +329,8 @@ func (m Matrix) Add(m2 Matrix) (Matrix, error) {
 	return r, nil
 }
 
-// Subtract receives another matrix as a parameter. It subtracts the two matrices and returns the result matrix and the error (if there is any).
+// Subtract otrzymuje inną macierz jako parametr.
+// Odejmuje dwie macierze i zwraca macierz wyników oraz błąd (jeśli istnieje).
 func (m Matrix) Subtract(m2 Matrix) (Matrix, error) {
 	rows, cols := m.Dim()
 	var r = make(Matrix, rows, cols)
@@ -356,9 +366,9 @@ func (m Matrix) isNil() bool {
 
 func (m Matrix) canPerformOperationsWith(m2 Matrix) (bool, error) {
 	if m == nil || m2 == nil {
-		return false, fmt.Errorf("Matrices cannot be nil")
+		return false, fmt.Errorf("Macierze nie mogą być <nil>")
 	} else if !m.areDimsEqual(m2) {
-		return false, fmt.Errorf("Matrix dimensions must match")
+		return false, fmt.Errorf("Wymiary macierzy muszą być zgodne")
 	}
 	return true, nil
 }

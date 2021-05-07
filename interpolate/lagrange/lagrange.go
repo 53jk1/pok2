@@ -2,15 +2,17 @@ package lagrange
 
 import (
 	"fmt"
+	
+	"github.com/53jk1/pok2/interpolate"
 )
 
-// Lagrange provides the basic functionality for lagrange interpolation.
-// Given X and Y float64 slices, it can estimate the value of the function at the desired point.
+// Lagrange zapewnia podstawową funkcjonalność interpolacji lagrange.
+// Biorąc pod uwagę wycinki X i Y float64, można oszacować wartość funkcji w żądanym punkcie.
 type Lagrange struct {
 	interpolate.Base
 }
 
-// New returns the new Lagrange object.
+// New zwraca nowy obiekt Lagrange'a.
 func New() *Lagrange {
 	lg := &Lagrange{}
 	return lg
@@ -38,18 +40,18 @@ func (lg *Lagrange) Validate(val float64) error {
 		for j := 0; j < len(lg.X); j++ {
 			if i != j {
 				if lg.X[i]-lg.X[j] == 0 {
-					return fmt.Errorf("There are at least 2 same X values. This will result in division by zero in Lagrange interpolation")
+					return fmt.Errorf("Istnieją co najmniej 2 takie same wartości X. Spowoduje to dzielenie przez zero w interpolacji Lagrange'a")
 				}
 			}
 		}
 	}
 
 	if val < lg.XYPairs[0].X {
-		return fmt.Errorf("Value to interpolate is too small and not in range")
+		return fmt.Errorf("Wartość do interpolacji jest zbyt mała i nie mieści się w zakresie")
 	}
 
 	if val > lg.XYPairs[len(lg.XYPairs)-1].X {
-		return fmt.Errorf("Value to interpolate is too large and not in range")
+		return fmt.Errorf("Wartość do interpolacji jest zbyt duża i nie mieści się w zakresie")
 	}
 
 	return nil

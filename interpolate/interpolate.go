@@ -13,7 +13,7 @@ type validateInterpolator interface {
 	validator
 }
 
-// WithMulti accepts the slice of float64, and returns the interpolated values for the passed slice values, and the error
+// WithMulti akceptuje wycinek float64 i zwraca interpolowane wartości dla przekazanych wartości wycinka, a błąd
 func WithMulti(vi validateInterpolator, vals []float64) ([]float64, error) {
 	var r []float64
 	for _, val := range vals {
@@ -26,7 +26,7 @@ func WithMulti(vi validateInterpolator, vals []float64) ([]float64, error) {
 	return r, nil
 }
 
-// WithSingle accepts the single float64 value, and returns the interpolated value for it, and the error
+// WithSingle akceptuje pojedynczą wartość float64 i zwraca dla niej interpolowaną wartość oraz błąd
 func WithSingle(vi validateInterpolator, val float64) (float64, error) {
 	var est float64
 

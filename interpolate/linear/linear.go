@@ -6,13 +6,13 @@ import (
 	"github.com/53jk1/pok2/interpolate"
 )
 
-// Linear provides the basic functionality for linear interpolation.
-// Given X and Y float64 slices, it can estimate the value of the function at the desired point.
+// Liniowy zapewnia podstawową funkcjonalność interpolacji liniowej.
+// Biorąc pod uwagę wycinki X i Y float64, można oszacować wartość funkcji w żądanym punkcie.
 type Linear struct {
 	interpolate.Base
 }
 
-// New returns the new Linear object
+// New zwraca nowy obiekt Linear
 func New() *Linear {
 	li := &Linear{}
 	return li
@@ -35,11 +35,11 @@ func (li *Linear) Interpolate(val float64) float64 {
 func (li *Linear) Validate(val float64) error {
 
 	if val < li.XYPairs[0].X {
-		return fmt.Errorf("Value to interpolate is too small and not in range")
+		return fmt.Errorf("Wartość do interpolacji jest zbyt mała i nie mieści się w zakresie")
 	}
 
 	if val > li.XYPairs[len(li.XYPairs)-1].X {
-		return fmt.Errorf("Value to interpolate is too large and not in range")
+		return fmt.Errorf("Wartość do interpolacji jest zbyt duża i nie mieści się w zakresie")
 	}
 
 	return nil
