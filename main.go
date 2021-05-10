@@ -1,6 +1,11 @@
 package main
 
-import "github.com/53jk1/pok2/interpolate"
+import (
+	"fmt"
+
+	"github.com/53jk1/pok2/interpolate"
+	"github.com/53jk1/pok2/interpolate/linear"
+)
 
 var x float64
 
@@ -13,4 +18,6 @@ func main() {
 	li.Fit(x, y)
 
 	estimate, err := interpolate.WithSingle(li, valToInterp)
+	fmt.Println(estimate)
+	fmt.Println(err)
 }

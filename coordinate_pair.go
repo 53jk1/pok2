@@ -1,4 +1,4 @@
-package pok2
+package main
 
 import (
 	"sort"
