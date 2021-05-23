@@ -1,4 +1,4 @@
-package main_test
+package pok2_test
 
 import (
 	"fmt"

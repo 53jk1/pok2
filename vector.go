@@ -1,4 +1,4 @@
-package main
+package pok2
 
 import (
 	"fmt"
